@@ -38,7 +38,8 @@ import lsst.utils.tests
 
 try:
     display
-    import lsst.afw.display.ds9 as ds9
+    import lsst.afw.display as afwDisplay
+    afwDisplay.setDefaultMaskTransparency(75)
 except NameError:
     display = False
     displayCoeffs = False
@@ -117,8 +118,10 @@ class SincPhotSums(lsst.utils.tests.TestCase):
         self.mimg.set(self.sky, 0x0, self.sky)
         self.expSky = afwImage.makeExposure(self.mimg)
 
-        if display > 1:
-            ds9.mtv(self.expGaussPsf)
+        if display:
+            frame = 0
+            disp = afwDisplay.Display(frame=frame)
+            disp.mtv(self.expGaussPsf, title="expGaussPsf")
 
     def tearDown(self):
         del self.mimg
@@ -153,8 +156,9 @@ class SincPhotSums(lsst.utils.tests.TestCase):
         del gal
 
         if display:
-            frame = 0
-            ds9.mtv(objImg, frame=frame, title="Elliptical")
+            frame = 1
+            disp = afwDisplay.Display(frame=frame)
+            disp.mtv(objImg, title="Elliptical")
 
         self.assertAlmostEqual(1.0, afwMath.makeStatistics(objImg.getMaskedImage().getImage(),
                                                            afwMath.SUM).getValue()/flux)
@@ -174,7 +178,7 @@ class SincPhotSums(lsst.utils.tests.TestCase):
 
                 mxx, mxy, myy = c**2*Mxx + s**2*Myy, c*s*(Mxx - Myy), s**2*Mxx + c**2*Myy
                 for r in (r1, r2):
-                    ds9.dot("@:%g,%g,%g" % (r**2*mxx, r**2*mxy, r**2*myy), xcen, ycen, frame=frame)
+                    disp.dot("@:%g,%g,%g" % (r**2*mxx, r**2*mxy, r**2*myy), xcen, ycen)
 
             center = lsst.geom.Point2D(xcen, ycen)
 

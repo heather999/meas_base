@@ -231,7 +231,7 @@ class SingleFrameMeasurementTask(BaseMeasurementTask):
 
     @skipline measure
 
-    We then might plot the results (@em e.g. if you set `--ds9` on the command line)
+    We then might plot the results (@em e.g. if you set `--doDisplay` on the command line)
 
     @skip display
     @until RED

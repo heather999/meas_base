@@ -72,7 +72,6 @@ class NoiseReplacer:
         Log object to use for status messages; no status messages
         will be printed if None
 
-        Notes
     Notes
     -----
     When measuring a source (or the children associated with a parent source), this class is used
@@ -104,7 +103,6 @@ class NoiseReplacer:
     topmost parent in the objects parent chain must be used.  The heavy footprint for that source
     is created in this class from the masked image.
     """
-
 
     ConfigClass = NoiseReplacerConfig
 

@@ -157,7 +157,7 @@ class CatalogCalculationTask(lsst.pipe.base.Task):
         self.initializePlugins()
 
     def initializePlugins(self):
-    """Initialize the plugins according to the configuration."""
+        """Initialize the plugins according to the configuration."""
 
         pluginType = namedtuple('pluginType', 'single multi')
         self.executionDict = {}

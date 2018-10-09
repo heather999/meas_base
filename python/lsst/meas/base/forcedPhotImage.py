@@ -87,7 +87,7 @@ class ForcedPhotImageTask(lsst.pipe.base.CmdLineTask):
 
     Parameters
     ----------
-    **kwargs
+    \*\*kwargs
         ForcedPhotImageTask takes two keyword arguments beyond the usual CmdLineTask arguments.
         At least one of these arguments must be present; if both are, schema takes precedence:
 
@@ -104,11 +104,14 @@ class ForcedPhotImageTask(lsst.pipe.base.CmdLineTask):
     overridden by subclasses.
 
     This task is not directly usable as a CmdLineTask; subclasses must:
-     - Set the _DefaultName class attribute
-     - Implement makeIdFactory
-     - Implement fetchReferences
-     - (optional) Implement attachFootprints
+
+    - Set the _DefaultName class attribute
+    - Implement makeIdFactory
+    - Implement fetchReferences
+    - (optional) Implement attachFootprints
+
     """
+
     ConfigClass = ForcedPhotImageConfig
     _DefaultName = "processImageForcedTask"
 
@@ -211,7 +214,7 @@ class ForcedPhotImageTask(lsst.pipe.base.CmdLineTask):
         raise NotImplementedError()
 
     def fetchReferences(self, dataRef, exposure):
-       """Hook for derived classes to define how to get references objects.
+        """Hook for derived classes to define how to get references objects.
 
         Notes
         -----

@@ -16,33 +16,45 @@ __all__ = ("CatalogCalculationPluginConfig", "CatalogCalculationPlugin", "Catalo
 
 
 class CatalogCalculationPluginConfig(BasePluginConfig):
-    """Default configuration class for catalogCalcuation plugins
-    """
+    """Default configuration class for catalog calcuation plugins."""
     pass
 
 
 class CatalogCalculationPlugin(BasePlugin):
-    """Base class for after CatalogCalculation plugin
+    """Base class for catalog calculation plugins.
 
     Parameters
     ----------
-    config :
-        An instance of catalogCalculation config class.
-    name :
+    config : `CatalogCalculationPlugin.ConfigClass`
+        Plugin configuration.
+    name : `str`
         The string the plugin was registered with.
-    schema :
+    schema : `lsst.afw.table.Schema`
         The source schema, New fields should be added here to
         hold output produced by this plugin.
     metadata :
         Plugin metadata that will be attached to the output catalog
+
+    Attributes
+    ----------
+    registry : `lsst.meas.base.PluginRegistry`
+        Registry of available plugins.
+    ConfigClass : `lsst.meas.base.CatalogCalculationPluginConfig`
+        Plugin configuration.
+    plugType : `str`
+        Defines whether the plugin works on a single source at a time
+        (``single``) or on the whole catalog ``multi``.
     """
+
     registry = PluginRegistry(CatalogCalculationPluginConfig)
     ConfigClass = CatalogCalculationPluginConfig
-    # This defines if the plugin operates on a single source at a time, or expects the whole catalog.
-    # The value defaults to single for a single source, set to multi when the plugin expects the whole
-    # catalog. If The plugin is of type multi, the fail method should be implemented to accept the whole
-    # catalog. If the plugin is of type the fail method should accept a single source record.
 
+    # This defines if the plugin operates on a single source at a time, or
+    # expects the whole catalog.  The value defaults to single for a single
+    # source, set to multi when the plugin expects the whole catalog. If The
+    # plugin is of type multi, the fail method should be implemented to accept
+    # the whole catalog. If the plugin is of type the fail method should
+    # accept a single source record.
     plugType = 'single'
 
     def __init__(self, config, name, schema, metadata):
@@ -50,45 +62,57 @@ class CatalogCalculationPlugin(BasePlugin):
 
     @classmethod
     def getExecutionOrder(cls):
-        """Sets the relative order of plugins (smaller numbers run first).
+        """Used to sets the relative order of plugin execution.
+
+        The values returned by `getExecutionOrder` are compared across all
+        plugins, and smaller numbers run first.
 
         Notes
         -----
-        CatalogCalculation plugins must run with BasePlugin.DEFAULT_CATALOGCALCULATION or higher
+        `CatalogCalculationPlugin`\s must run with
+        `BasePlugin.DEFAULT_CATALOGCALCULATION` or higher.
 
         All plugins must implement this method with an appropriate run level
         """
         raise NotImplementedError()
 
     def calculate(self, cat, **kwargs):
-        """Process either a single catalog enter or the whole catalog and produce output defined by the plugin
+        """Perform the calculation specified by this plugin.
+
+        This method can either be used to operate on a single catalog record
+        or a whole catalog, populating it with the output defined by this
+        plugin.
+
+        Note that results may be added to catalog records as new columns, or
+        may result in changes to existing values.
 
         Parameters
         ----------
-        cat:
-            Either a lsst source catalog or a catalog entery depending on the plug type
-            specified in the classes configuration. Results may be added to new columns,
-            or existing entries altered.
-        kwargs:
-            Any additional kwargs that may be passed through the CatalogCalculationPlugin.
+        cat : `lsst.afw.table.SourceCatalog` or `lsst.afw.table.SourceRecord`
+            May either be a `~lsst.afw.table.SourceCatalog` or a single
+            `~lsst.afw.table.SourceRecord`, depending on the plugin type. Will
+            be updated in place to contain the results of plugin execution.
+        kwargs :
+            Any additional kwargs that may be passed to the plugin.
         """
         raise NotImplementedError()
 
 
 class CCContext:
-    """Context manager to handle catching errors that may have been thrown in a catalogCalculation plugin
+    """Handle erros that are thrown by catalog calculation plugins.
+
+    This is a context manager.
 
     Parameters
     ----------
-    plugin :
-        The plugin that is to be run
-    cat :
-        Either a catalog or a source record entry of a catalog,
-        depending of the plugin type,
-        i.e. either working on a whole catalog, or a single record.
+    plugin : `lsst.meas.base.CatalogCalculationPlugin`
+        The plugin that is to be run.
+    cat : `lsst.afw.table.SourceCatalog` or `lsst.afw.table.SourceRecord`
+        May either be a `~lsst.afw.table.SourceCatalog` or a single
+        `~lsst.afw.table.SourceRecord`, depending on the plugin type.
     log :
-        The log which to write to, most likely will always be the log (self.log)
-        of the object in which the context manager is used.
+        A logger. Generally, this should be the logger of the object in which
+        the context manager is being used.
     """
     def __init__(self, plugin, cat, log):
         self.plugin = plugin
@@ -111,13 +135,12 @@ class CCContext:
 
 
 class CatalogCalculationConfig(lsst.pex.config.Config):
-    """Config class for catalog calculation driver task.
+    """Config class for the catalog calculation driver task.
 
-    Notes
-    -----
-    Specifies which plugins will execute when CatalogCalculationTask
+    Specifies which plugins will execute when the ``CatalogCalculationTask``
     associated with this configuration is run.
     """
+
     plugins = CatalogCalculationPlugin.registry.makeField(
         multi=True,
         default=["base_ClassificationExtendedness",
@@ -126,22 +149,25 @@ class CatalogCalculationConfig(lsst.pex.config.Config):
 
 
 class CatalogCalculationTask(lsst.pipe.base.Task):
-    """This task facilitates running plugins which will operate on a source catalog.
-    These plugins may do things such as classifying an object based on
-    source record entries inserted during a measurement task.
+    """Run plugins which operate on a catalog of sources.
+
+    This task facilitates running plugins which will operate on a source
+    catalog. These plugins may do things such as classifying an object based
+    on source record entries inserted during a measurement task.
 
     Parameters
     ----------
-    plugMetaData :
-        An lsst.daf.base.PropertyList that will be filled with metadata
-        about the plugins being run. If None, an empty empty PropertyList
-        will be created.
+    plugMetaData : `lsst.daf.base.PropertyList` or `None`
+        Will be modified in-place to contain metadata about the plugins being
+        run. If ``None``, an empty `~lsst.daf.base.PropertyList` will be
+        created.
     kwargs :
-        Additional arguments passed to `~lsst.pipe.base.Task` superclass constructor
+        Additional arguments passed to the superclass constructor.
 
     Notes
     -----
-    Plugins may either take an entire catalog to work on at a time, or work on individual records
+    Plugins may either take an entire catalog to work on at a time, or work on
+    individual records.
     """
     ConfigClass = CatalogCalculationConfig
     _DefaultName = "catalogCalculation"
@@ -183,23 +209,22 @@ class CatalogCalculationTask(lsst.pipe.base.Task):
 
     @lsst.pipe.base.timeMethod
     def run(self, measCat):
-        """The entry point for the catalogCalculation task.
+        """The entry point for the catalog calculation task.
 
         Parameters
         ----------
-        meascat :
-            This method should be called with a reference to a
-            measurement catalog.
+        meascat : `lsst.afw.table.SourceCatalog`
+            Catalog for measurement.
         """
         self.callCompute(measCat)
 
     def callCompute(self, catalog):
-        """Run each of the plugins on the catalog
+        """Run each of the plugins on the catalog.
 
         Parameters
         ----------
         catalog :
-            The catalog on which the plugins will operate
+            The catalog on which the plugins will operate.
         """
         for runlevel in sorted(self.executionDict):
             # Run all of the plugins which take a whole catalog first

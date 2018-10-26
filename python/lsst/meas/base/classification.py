@@ -20,9 +20,7 @@
 # the GNU General Public License along with this program.  If not,
 # see <http://www.lsstcorp.org/LegalNotices/>.
 #
-"""
-Definition and registration of classification plugins
-"""
+"""Definition and registration of classification plugins."""
 
 import numpy as np
 
@@ -46,15 +44,19 @@ class CatalogCalculationClassificationConfig(CatalogCalculationPluginConfig):
 
 @register("base_ClassificationExtendedness")
 class CatalogCalculationClassificationPlugin(CatalogCalculationPlugin):
-    """A binary measure of the extendedness of a source, based a simple cut on the ratio of the
-    PSF flux to the model flux.
+    """Plugin which calculates a binary measure of source extendedness.
+
+    Extendedness is based on a simple cut of the ratio of the PSF flux to the
+    model flux.
 
     Notes
     -----
-    Because the fluxes on which this algorithm is based on are slot measurements, they can be provided
-    by different algorithms, and the "fluxRatio" threshold used by this algorithm should generally
-    be set differently for different algorithms.  To do this, plot the difference between the PSF
-    magnitude and the model magnitude vs. the PSF magnitude, and look for where the cloud of galaxies
+    Because the fluxes on which this algorithm is based on are slot
+    measurements, they can be provided by different algorithms, and the
+    `~CatalogCalculationClassificationConfig.fluxRatio` threshold used by this
+    algorithm should generally be set differently for different algorithms.
+    To do this, plot the difference between the PSF magnitude and the model
+    magnitude vs. the PSF magnitude, and look for where the cloud of galaxies
     begins.
     """
 

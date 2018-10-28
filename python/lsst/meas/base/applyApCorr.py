@@ -137,6 +137,8 @@ class ApCorrInfo:
 
 
 class ApplyApCorrConfig(lsst.pex.config.Config):
+    """Aperture correction configuration."""
+
     ignoreList = lsst.pex.config.ListField(
         doc="flux measurement algorithms in getApCorrNameSet() to ignore; "
             "if a name is listed that does not appear in getApCorrNameSet() then a warning is logged",

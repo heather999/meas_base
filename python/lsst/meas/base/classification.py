@@ -34,6 +34,8 @@ __all__ = (
 
 
 class CatalogCalculationClassificationConfig(CatalogCalculationPluginConfig):
+    """Configuration for catalog classification plugin."""
+
     fluxRatio = lsst.pex.config.Field(dtype=float, default=.925, optional=True,
                                       doc="critical ratio of model to psf flux")
     modelErrFactor = lsst.pex.config.Field(dtype=float, default=0.0, optional=True,

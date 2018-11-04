@@ -34,28 +34,24 @@ class CatalogCalculationPlugin(BasePlugin):
         hold output produced by this plugin.
     metadata :
         Plugin metadata that will be attached to the output catalog
-
-    Attributes
-    ----------
-    registry : `lsst.meas.base.PluginRegistry`
-        Registry of available plugins.
-    ConfigClass : `lsst.meas.base.CatalogCalculationPluginConfig`
-        Plugin configuration.
-    plugType : `str`
-        Defines whether the plugin works on a single source at a time
-        (``single``) or on the whole catalog ``multi``.
     """
 
-    registry = PluginRegistry(CatalogCalculationPluginConfig)
-    ConfigClass = CatalogCalculationPluginConfig
+    ConfigClass = CatalogCalculationPluginConfig  # documentation inherited
 
-    # This defines if the plugin operates on a single source at a time, or
-    # expects the whole catalog.  The value defaults to single for a single
-    # source, set to multi when the plugin expects the whole catalog. If The
-    # plugin is of type multi, the fail method should be implemented to accept
-    # the whole catalog. If the plugin is of type the fail method should
-    # accept a single source record.
+    registry = PluginRegistry(CatalogCalculationPluginConfig)
+    """List of available plugins (`lsst.meas.base.PluginRegistry`).
+    """
+
     plugType = 'single'
+    """Does the plugin operate on a single source or the whole catalog (`str`)?
+
+    If the plugin operates on a single source at a time, this should be set to
+    ``"single"``; if it expects the whoe catalog, to ``"multi"``.  If the
+    plugin is of type ``"multi"``, the `fail` method must be implemented to
+    accept the whole catalog. If the plugin is of type ``"single"``, `fail`
+    should accept a single source record.
+    """
+
 
     def __init__(self, config, name, schema, metadata):
         BasePlugin.__init__(self, config, name)

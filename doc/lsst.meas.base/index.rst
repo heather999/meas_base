@@ -69,3 +69,6 @@ Python API reference
 .. automodapi:: lsst.meas.base.catalogCalculation
 .. automodapi:: lsst.meas.base.classification
 .. automodapi:: lsst.meas.base.forcedMeasurement
+.. automodapi:: lsst.meas.base.forcedPhotCcd
+.. automodapi:: lsst.meas.base.forcedPhotImage
+.. automodapi:: lsst.meas.base.references
